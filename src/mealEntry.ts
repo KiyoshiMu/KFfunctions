@@ -7,6 +7,15 @@ type Request = {
   params: { mealId: string };
 };
 
+const getMealStatSamples = async (req: Request, res: Response) => {
+  try {
+    const mealStats = await db.collection("mealStat").limit(3);
+    return res.status(200).json((await mealStats.get()).docs);
+  } catch (error) {
+    return res.status(500).json(error.message);
+  }
+};
+
 const initMeal = async (req: Request, res: Response) => {
   try {
     const meal = req.body;
@@ -20,4 +29,4 @@ const initMeal = async (req: Request, res: Response) => {
   }
 };
 
-export { initMeal };
+export { initMeal, getMealStatSamples };

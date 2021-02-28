@@ -7,6 +7,15 @@ type Request = {
   params: { customerId: string };
 };
 
+const getCustomerSamples = async (req: Request, res: Response) => {
+  try {
+    const customerSample = await db.collection("customer").limit(3);
+    return res.status(200).json((await customerSample.get()).docs);
+  } catch (error) {
+    return res.status(500).json(error.message);
+  }
+};
+
 const initCustomer = async (req: Request, res: Response) => {
   try {
     const customer = req.body;
@@ -25,9 +34,17 @@ const updateCustomerHistory = async (
   orderHistory: OrderHistory
 ) => {
   const customerRef = db.collection("customer").doc(customerId);
-  await customerRef.update({
-    "Order History": admin.firestore.FieldValue.arrayUnion(orderHistory),
-  });
+  try {
+    await customerRef.update({
+      "Order History": admin.firestore.FieldValue.arrayUnion(orderHistory),
+    });
+  } catch (error) {
+    if (error.code === 5) {
+      customerRef.set({ Email: customerId }, { merge: true });
+    } else {
+      throw error;
+    }
+  }
 };
 
-export { initCustomer, updateCustomerHistory };
+export { initCustomer, updateCustomerHistory, getCustomerSamples };

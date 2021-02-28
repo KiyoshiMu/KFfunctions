@@ -9,6 +9,15 @@ type Request = {
   params: { orderId: string };
 };
 
+const getOrderSamples = async (req: Request, res: Response) => {
+  try {
+    const orderSample = await db.collection("orders").limit(3);
+    return res.status(200).json((await orderSample.get()).docs);
+  } catch (error) {
+    return res.status(500).json(error.message);
+  }
+};
+
 const addOrder = async (req: Request, res: Response) => {
   try {
     const order = req.body;
@@ -57,7 +66,7 @@ const cancelOrder = async (req: Request, res: Response) => {
   const { orderId } = req.params;
   console.log(orderId);
   try {
-    const order = db.collection("entries").doc(orderId);
+    const order = db.collection("Orders").doc(orderId);
     const data = (await order.get()).data() as Order;
     data.Items.forEach((e) => (e.Quantity = -e.Quantity));
     await updateStat(-data.Price, -1, data.Items);
@@ -76,4 +85,4 @@ const cancelOrder = async (req: Request, res: Response) => {
   }
 };
 
-export { addOrder, updateOrder, cancelOrder };
+export { addOrder, updateOrder, cancelOrder, getOrderSamples };
