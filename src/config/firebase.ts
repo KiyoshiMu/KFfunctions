@@ -1,13 +1,10 @@
-import * as admin from 'firebase-admin'
+import * as admin from "firebase-admin";
 
-
-admin.initializeApp(
-  {
+admin.initializeApp({
   credential: admin.credential.applicationDefault(),
-  databaseURL: 'https://shadowserver.firebaseio.com'
-}
-)
+  databaseURL: "https://shadowserver.firebaseio.com",
+});
 
-const db = admin.firestore()
+const db = admin.firestore();
 
-export { admin, db }
+export { admin, db };

@@ -1,4 +1,4 @@
-interface Stat {
-    Income: number;
-    OrderNum: number;
-  }
+export interface Stat {
+  Income: number;
+  Orders: number;
+}
