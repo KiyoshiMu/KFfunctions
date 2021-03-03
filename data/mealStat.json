@@ -1,0 +1,4 @@
+[
+  { "name": "water", "size": "large", "weekly order": 10, "total order": 100 },
+  { "name": "nice", "size": "large", "weekly order": 10, "total order": 100 }
+]

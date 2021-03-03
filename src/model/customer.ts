@@ -4,10 +4,6 @@ export interface Customer {
   Phone: string;
   Email: string;
   Point: number;
-  "Order History": OrderHistory[];
-}
-
-export interface OrderHistory {
-  orderId: string;
-  status?: string;
+  "Latest Order Date"?: string;
+  History?: any;
 }

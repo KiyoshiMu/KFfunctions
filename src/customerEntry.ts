@@ -1,6 +1,7 @@
 import { admin, db } from "./config/firebase";
 import { Response } from "express";
-import { Customer, OrderHistory } from "./model/customer";
+import { Customer } from "./model/customer";
+import { Item } from "./model/order";
 
 type Request = {
   body: Customer;
@@ -9,8 +10,10 @@ type Request = {
 
 const getCustomerSamples = async (req: Request, res: Response) => {
   try {
-    const customerSample = await db.collection("customer").limit(3);
-    return res.status(200).json((await customerSample.get()).docs);
+    const customerSample = (await db.collection("customer").limit(3).get())
+      .docs;
+    const ret = customerSample.map((doc) => doc.data());
+    return res.status(200).json(ret);
   } catch (error) {
     return res.status(500).json(error.message);
   }
@@ -29,18 +32,22 @@ const initCustomer = async (req: Request, res: Response) => {
   }
 };
 
-const updateCustomerHistory = async (
-  customerId: string,
-  orderHistory: OrderHistory
-) => {
+const updateCustomerHistory = async (customerId: string, items: Item[]) => {
   const customerRef = db.collection("customer").doc(customerId);
+  const update = new Map(
+    items.map((e) => [
+      `History.${e.Id}`,
+      admin.firestore.FieldValue.increment(e.Quantity),
+    ])
+  );
+  update.set("Latest Order Date", admin.firestore.FieldValue.serverTimestamp());
+  const updateObj = Object.fromEntries(update.entries());
   try {
-    await customerRef.update({
-      "Order History": admin.firestore.FieldValue.arrayUnion(orderHistory),
-    });
+    await customerRef.update(updateObj);
   } catch (error) {
     if (error.code === 5) {
-      customerRef.set({ Email: customerId }, { merge: true });
+      customerRef.set({ History: {} }, { merge: true });
+      customerRef.update(updateObj);
     } else {
       throw error;
     }

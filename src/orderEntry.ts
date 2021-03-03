@@ -1,29 +1,41 @@
-import { db } from "./config/firebase";
+import { admin, db } from "./config/firebase";
 import { Response } from "express";
 import { Order } from "./model/order";
 import { updateStat } from "./statEntry";
 import { updateCustomerHistory } from "./customerEntry";
+import { CancelReq, DoneReq, OrderReq, QueryReq } from "./model/orderReq";
 
-type Request = {
-  body: Order;
-  params: { orderId: string };
+const docsToArr = (
+  docs: FirebaseFirestore.QuerySnapshot<FirebaseFirestore.DocumentData>
+) => {
+  const ret: FirebaseFirestore.DocumentData[] = [];
+  docs.forEach((doc) => ret.push(doc.data()));
+  return ret;
 };
 
-const getOrderSamples = async (req: Request, res: Response) => {
+const getOrder = async (req: QueryReq, res: Response) => {
+  const { CustomerId, Number, Status } = req.body;
   try {
-    const orderSample = await db.collection("orders").limit(3);
-    return res.status(200).json((await orderSample.get()).docs);
+    const order = await getRef(CustomerId)
+      .where("Status", "==", Status ?? "start")
+      .orderBy("Date Modified")
+      .limitToLast(Number ?? 1)
+      .get();
+    const ret = docsToArr(order);
+    return res.status(200).json(ret);
   } catch (error) {
     return res.status(500).json(error.message);
   }
 };
 
-const addOrder = async (req: Request, res: Response) => {
+const getRef = (customerId: string) =>
+  db.collection("orders").doc(customerId).collection("history");
+
+const addOrder = async (req: OrderReq, res: Response) => {
+  const order = req.body;
   try {
-    const order = req.body;
-    const addRes = await db.collection("orders").add(order);
-    await updateStat(order.Price, 1, order.Items);
-    await updateCustomerHistory(order.Email, { orderId: addRes.id });
+    order["Date Modified"] = admin.firestore.FieldValue.serverTimestamp();
+    const addRes = await getRef(order.CustomerId).add(order);
     res.status(200).send({
       status: "success",
       message: "Order added successfully",
@@ -34,48 +46,64 @@ const addOrder = async (req: Request, res: Response) => {
   }
 };
 
-const updateOrder = async (req: Request, res: Response) => {
+const updateOrder = async (req: DoneReq, res: Response) => {
   const {
-    body: { Status },
-    params: { orderId },
+    body: { Status, CustomerId, orderId },
   } = req;
-  console.log(orderId);
   try {
-    const updateRes = db
-      .collection("orders")
-      .doc(orderId)
-      .update({ Status: Status, "Date Modified": Date.now.toString() });
-
-    await updateRes.catch((error) => {
+    const order = getRef(CustomerId).doc(orderId);
+    const orderData = await order.get();
+    if (!orderData.exists) {
       return res.status(400).json({
         status: "error",
-        message: error.message,
+        message: "order doesn't exist",
       });
-    });
+    }
+    await order
+      .update({
+        Status: Status,
+        "Date Modified": admin.firestore.FieldValue.serverTimestamp(),
+      })
+      .catch((error) => {
+        return res.status(400).json({
+          status: "error",
+          message: error.message,
+        });
+      });
+    const { Price, Items } = orderData.data() as Order;
+    if (Status == "completed") {
+      await Promise.all([
+        updateStat(Price, 1, Items),
+        updateCustomerHistory(CustomerId, Items),
+      ]);
+    }
     return res.status(200).json({
       status: "success",
       message: "order updated successfully",
-      data: orderId,
+      data: { orderId },
     });
   } catch (error) {
     return res.status(500).json(error.message);
   }
 };
 
-const cancelOrder = async (req: Request, res: Response) => {
-  const { orderId } = req.params;
-  console.log(orderId);
+const cancelOrder = async (req: CancelReq, res: Response) => {
+  const {
+    body: { CustomerId, orderId },
+  } = req;
   try {
-    const order = db.collection("Orders").doc(orderId);
-    const data = (await order.get()).data() as Order;
-    data.Items.forEach((e) => (e.Quantity = -e.Quantity));
-    await updateStat(-data.Price, -1, data.Items);
-    await order.delete().catch((error) => {
-      return res.status(400).json({
-        status: "error",
-        message: error.message,
+    const order = getRef(CustomerId).doc(orderId);
+    await order
+      .update({
+        Status: "cancel",
+        "Date Modified": admin.firestore.FieldValue.serverTimestamp(),
+      })
+      .catch((error) => {
+        return res.status(400).json({
+          status: "error",
+          message: error.message,
+        });
       });
-    });
     return res.status(200).json({
       status: "success",
       message: "order deleted successfully",
@@ -85,4 +113,4 @@ const cancelOrder = async (req: Request, res: Response) => {
   }
 };
 
-export { addOrder, updateOrder, cancelOrder, getOrderSamples };
+export { addOrder, updateOrder, cancelOrder, getOrder };
