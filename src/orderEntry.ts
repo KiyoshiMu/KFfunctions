@@ -85,7 +85,7 @@ const updateOrder = async (req: DoneReq, res: Response) => {
           { updateIncome: price, updateOrder: 1, weekMark: monday },
           items
         ),
-        updateCustomerHistory(customerId, items),
+        updateCustomerHistory(customerId, items, price),
       ]);
     }
     return res.status(200).json({

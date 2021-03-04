@@ -23,9 +23,9 @@ export interface MealStat {
 
 export interface MealUpdate {
   mealId: string;
-  name: string;
-  size: string;
-  price: number;
+  name?: string;
+  size?: string;
+  price?: number;
   quantityChange: number;
   incomeChange: number;
 }

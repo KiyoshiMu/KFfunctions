@@ -9,7 +9,7 @@ type Request = {
 
 const getStat = async (req: Request, res: Response) => {
   try {
-    const stat = await (
+    const stat = (
       await db.collection("saleStat").doc("realtimeStat").get()
     ).data();
     return res.status(200).json(stat);
@@ -39,12 +39,12 @@ const overStatUpdate = async (
 ) => {
   try {
     await stat.update({
-      Income: admin.firestore.FieldValue.increment(updateIncome),
-      Orders: admin.firestore.FieldValue.increment(updateOrder),
+      income: admin.firestore.FieldValue.increment(updateIncome),
+      orders: admin.firestore.FieldValue.increment(updateOrder),
     });
   } catch (error) {
     if (error.code === 5) {
-      stat.set({ Income: updateIncome, Orders: updateOrder }, { merge: true });
+      stat.set({ income: updateIncome, orders: updateOrder }, { merge: true });
     } else {
       throw error;
     }
@@ -77,16 +77,13 @@ const itemStatUpdate = (items: Item[]) =>
     async (e) =>
       await updateMealStat({
         mealId: e.mealId,
-        name: e.name,
-        size: e.size,
-        price: e.piecePrice,
         quantityChange: e.quantity,
         incomeChange: e.piecePrice * e.quantity,
       })
   );
 
 const updateMealStat = async (mealUpdate: MealUpdate) => {
-  const mealStatRef = db.collection("mealStat").doc(mealUpdate.mealId);
+  const mealStatRef = db.collection("meals").doc(mealUpdate.mealId);
   try {
     await mealStatRef.update({
       totalOrder: admin.firestore.FieldValue.increment(
@@ -106,9 +103,6 @@ const updateMealStat = async (mealUpdate: MealUpdate) => {
     if (error.code === 5) {
       mealStatRef.set(
         {
-          name: mealUpdate.name,
-          size: mealUpdate.size,
-          price: mealUpdate.price,
           totalOrder: mealUpdate.quantityChange,
           weeklyOrder: mealUpdate.quantityChange,
           weeklyIncome: mealUpdate.incomeChange,

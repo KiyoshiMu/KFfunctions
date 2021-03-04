@@ -30,10 +30,10 @@ const initCustomer = async (req: InitReq, res: Response) => {
   }
 };
 
-const updateCustomerHistory = async (customerId: string, items: Item[]) => {
+const updateCustomerHistory = async (customerId: string, items: Item[], consume:number) => {
   const customerRef = db.collection("customer").doc(customerId);
   if (!(await customerRef.get()).exists) {
-    await customerRef.set({ history: {} }, { merge: true });
+    await customerRef.set({ history: {}, customerId }, { merge: true });
   }
   const update = Object.fromEntries(
     items.map((e) => [
@@ -42,6 +42,8 @@ const updateCustomerHistory = async (customerId: string, items: Item[]) => {
     ])
   );
   update.latestOrderDate = admin.firestore.FieldValue.serverTimestamp();
+  update.orders = admin.firestore.FieldValue.increment(1)
+  update.consume = admin.firestore.FieldValue.increment(consume)
   await customerRef.update(update);
 };
 
