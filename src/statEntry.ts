@@ -33,42 +33,68 @@ const initStat = async (req: Request, res: Response) => {
   }
 };
 
-const updateStat = async (
-  updateIncome: number,
-  updateOrder: number,
-  items: Array<Item>
-) => {
-  const saleStat = db.collection("saleStat").doc("realtimeStat");
-  try {
-    await saleStat.update({
-      Income: admin.firestore.FieldValue.increment(updateIncome),
-      Orders: admin.firestore.FieldValue.increment(updateOrder),
-    });
-  } catch (error) {
-    if (error.code === 5) {
-      saleStat.set(
-        {
-          Income: updateIncome,
-          Orders: updateOrder,
-        },
-        { merge: true }
-      );
-    } else {
-      throw error;
-    }
-  }
+interface statUpdate {
+  updateIncome: number;
+  updateOrder: number;
+  week: number;
+}
 
+const updateStat = async (statUpdate: statUpdate, items: Item[]) => {
+  const { week } = statUpdate;
+  const totalStat = db.collection("saleStat").doc("realtimeStat");
+  const weekStat = totalStat.collection("weekly").doc(week.toString());
+  await overStatUpdate(totalStat, statUpdate);
+  await weekStatUpdate(weekStat, statUpdate);
   items.forEach(
     async (e) =>
       await updateMealStat({
         Id: e.Id,
         name: e.Name,
         size: e.Size,
-        price: e["Piece Price"],
+        price: e["PiecePrice"],
         quantityChange: e.Quantity,
-        incomeChange: e["Piece Price"] * e.Quantity,
+        incomeChange: e["PiecePrice"] * e.Quantity,
       })
   );
+};
+
+const overStatUpdate = async (
+  stat: FirebaseFirestore.DocumentReference<FirebaseFirestore.DocumentData>,
+  { updateIncome, updateOrder }: statUpdate
+) => {
+  try {
+    await stat.update({
+      Income: admin.firestore.FieldValue.increment(updateIncome),
+      Orders: admin.firestore.FieldValue.increment(updateOrder),
+    });
+  } catch (error) {
+    if (error.code === 5) {
+      stat.set({ Income: updateIncome, Orders: updateOrder }, { merge: true });
+    } else {
+      throw error;
+    }
+  }
+};
+
+const weekStatUpdate = async (
+  stat: FirebaseFirestore.DocumentReference<FirebaseFirestore.DocumentData>,
+  { updateIncome, updateOrder, week }: statUpdate
+) => {
+  try {
+    await stat.update({
+      Income: admin.firestore.FieldValue.increment(updateIncome),
+      Orders: admin.firestore.FieldValue.increment(updateOrder),
+    });
+  } catch (error) {
+    if (error.code === 5) {
+      stat.set(
+        { Income: updateIncome, Orders: updateOrder, week: week },
+        { merge: true }
+      );
+    } else {
+      throw error;
+    }
+  }
 };
 
 const updateMealStat = async (mealUpdate: MealUpdate) => {

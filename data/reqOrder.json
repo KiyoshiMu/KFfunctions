@@ -18,7 +18,8 @@
       }
     ],
     "Price": 40,
-    "Status": "start"
+    "Status": "start",
+    "DateCreated": "2019-08-19T18:04:05"
   },
   {
     "CustomerId": "1111@gmail.com",
@@ -39,18 +40,18 @@
       }
     ],
     "Price": 40,
-    "Payment method": "Cash on delivery",
-    "First Name": "Anthony",
-    "Last Name": "Costa",
+    "PaymentMethod": "Cash on delivery",
+    "FirstName": "Anthony",
+    "LastName": "Costa",
     "Address": "1280 Main XXXXX Hamilton CA",
     "Phone": "905 xxx xxxx",
     "Email": "1111@gmail.com",
     "Customer Notes": "",
     "Discount": 0,
-    "Refund Value": 0,
-    "Total Order Value": 0,
-    "Refund Reason": "",
-    "Date Created": "2019-08-19T18:04:05",
-    "Date Modified": "2019-09-02T18:07:51"
+    "RefundValue": 0,
+    "TotalOrderValue": 0,
+    "RefundReason": "",
+    "DateModified": "2019-09-02T18:07:51",
+    "DateCreated": "2019-08-19T18:04:05"
   }
 ]

@@ -1,9 +1,9 @@
 {
   "CustomerId": "1111@gmail.com",
-  "First Name": "Anthony",
-  "Last Name": "Costa",
+  "FirstName": "Anthony",
+  "LastName": "Costa",
   "Phone": "905 xxx xxxx",
   "Email": "1111@gmail.com",
   "Point": 100,
-  "Order History": []
+  "OrderHistory": []
 }

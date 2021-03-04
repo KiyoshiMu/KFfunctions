@@ -1,4 +1,4 @@
 [
-  { "name": "water", "size": "large", "weekly order": 10, "total order": 100 },
-  { "name": "nice", "size": "large", "weekly order": 10, "total order": 100 }
+  { "name": "water", "size": "large", "weeklyOrder": 10, "totalOrder": 100 },
+  { "name": "nice", "size": "large", "weeklyOrder": 10, "totalOrder": 100 }
 ]

@@ -18,7 +18,7 @@ const getOrder = async (req: QueryReq, res: Response) => {
   try {
     const order = await getRef(CustomerId)
       .where("Status", "==", Status ?? "start")
-      .orderBy("Date Modified")
+      .orderBy("DateModified")
       .limitToLast(Number ?? 1)
       .get();
     const ret = docsToArr(order);
@@ -34,7 +34,10 @@ const getRef = (customerId: string) =>
 const addOrder = async (req: OrderReq, res: Response) => {
   const order = req.body;
   try {
-    order["Date Modified"] = admin.firestore.FieldValue.serverTimestamp();
+    order.DateModified = admin.firestore.FieldValue.serverTimestamp();
+    order.DateCreated = admin.firestore.Timestamp.fromMillis(
+      Date.parse(order.DateCreated)
+    );
     const addRes = await getRef(order.CustomerId).add(order);
     res.status(200).send({
       status: "success",
@@ -62,7 +65,7 @@ const updateOrder = async (req: DoneReq, res: Response) => {
     await order
       .update({
         Status: Status,
-        "Date Modified": admin.firestore.FieldValue.serverTimestamp(),
+        DateModified: admin.firestore.FieldValue.serverTimestamp(),
       })
       .catch((error) => {
         return res.status(400).json({
@@ -70,10 +73,15 @@ const updateOrder = async (req: DoneReq, res: Response) => {
           message: error.message,
         });
       });
-    const { Price, Items } = orderData.data() as Order;
+    const { Price, Items, DateCreated } = orderData.data() as Order;
     if (Status == "completed") {
+      const date = DateCreated as admin.firestore.Timestamp;
+      const monday = getMonday(date.toDate()).getTime();
       await Promise.all([
-        updateStat(Price, 1, Items),
+        updateStat(
+          { updateIncome: Price, updateOrder: 1, week: monday },
+          Items
+        ),
         updateCustomerHistory(CustomerId, Items),
       ]);
     }
@@ -87,6 +95,11 @@ const updateOrder = async (req: DoneReq, res: Response) => {
   }
 };
 
+const getMonday = (date: Date) => {
+  const day = date.getDay();
+  return new Date(date.setDate(date.getDate() - day + (day == 0 ? -6 : 1)));
+};
+
 const cancelOrder = async (req: CancelReq, res: Response) => {
   const {
     body: { CustomerId, orderId },
@@ -96,7 +109,7 @@ const cancelOrder = async (req: CancelReq, res: Response) => {
     await order
       .update({
         Status: "cancel",
-        "Date Modified": admin.firestore.FieldValue.serverTimestamp(),
+        DateModified: admin.firestore.FieldValue.serverTimestamp(),
       })
       .catch((error) => {
         return res.status(400).json({

@@ -2,19 +2,19 @@ export interface Order {
   CustomerId: string;
   Items: Item[];
   Price: number;
-  "First Name": string;
-  "Last Name": string;
+  FirstName: string;
+  LastName: string;
   Address: string;
   Phone: string;
   Email: string;
-  "Customer Notes": string;
-  "Payment method": string;
+  CustomerNotes: string;
+  PaymentMethod: string;
   Discount: number;
-  "Refund Value": number;
-  "Total Order Value": number;
-  "Refund Reason": string;
-  "Date Created": string;
-  "Date Modified": any;
+  RefundValue: number;
+  TotalOrderValue: number;
+  RefundReason: string;
+  DateCreated: string | any;
+  DateModified: string | any;
   Status: string;
 }
 
@@ -23,5 +23,5 @@ export interface Item {
   Name: string;
   Quantity: number;
   Size: string;
-  "Piece Price": number;
+  PiecePrice: number;
 }
