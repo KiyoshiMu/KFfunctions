@@ -19,7 +19,7 @@ const initCustomer = async (req: InitReq, res: Response) => {
     const customer = req.body;
     await db
       .collection("customer")
-      .doc(customer.Id)
+      .doc(customer.customerId)
       .set(customer, { merge: true });
     res.status(200).send({
       Customerus: "success",
@@ -32,23 +32,17 @@ const initCustomer = async (req: InitReq, res: Response) => {
 
 const updateCustomerHistory = async (customerId: string, items: Item[]) => {
   const customerRef = db.collection("customer").doc(customerId);
+  if (!(await customerRef.get()).exists) {
+    await customerRef.set({ history: {} }, { merge: true });
+  }
   const update = Object.fromEntries(
     items.map((e) => [
-      `History.${e.Id}`,
-      admin.firestore.FieldValue.increment(e.Quantity),
+      `history.${e.mealId}`,
+      admin.firestore.FieldValue.increment(e.quantity),
     ])
   );
-  update.LatestOrderDate = admin.firestore.FieldValue.serverTimestamp();
-  try {
-    await customerRef.update(update);
-  } catch (error) {
-    if (error.code === 5) {
-      customerRef.set({ History: {} }, { merge: true });
-      customerRef.update(update);
-    } else {
-      throw error;
-    }
-  }
+  update.latestOrderDate = admin.firestore.FieldValue.serverTimestamp();
+  await customerRef.update(update);
 };
 
 export { initCustomer, updateCustomerHistory, getCustomer };

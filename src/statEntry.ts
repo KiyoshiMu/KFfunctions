@@ -53,17 +53,17 @@ const overStatUpdate = async (
 
 const weekStatUpdate = async (
   stat: FirebaseFirestore.DocumentReference<FirebaseFirestore.DocumentData>,
-  { updateIncome, updateOrder, weekMark: week }: statUpdate
+  { updateIncome, updateOrder, weekMark }: statUpdate
 ) => {
   try {
     await stat.update({
-      Income: admin.firestore.FieldValue.increment(updateIncome),
-      Orders: admin.firestore.FieldValue.increment(updateOrder),
+      income: admin.firestore.FieldValue.increment(updateIncome),
+      orders: admin.firestore.FieldValue.increment(updateOrder),
     });
   } catch (error) {
     if (error.code === 5) {
       stat.set(
-        { Income: updateIncome, Orders: updateOrder, week: week },
+        { income: updateIncome, orders: updateOrder, weekMark: weekMark },
         { merge: true }
       );
     } else {
@@ -76,17 +76,17 @@ const itemStatUpdate = (items: Item[]) =>
   items.forEach(
     async (e) =>
       await updateMealStat({
-        Id: e.Id,
-        name: e.Name,
-        size: e.Size,
-        price: e.PiecePrice,
-        quantityChange: e.Quantity,
-        incomeChange: e.PiecePrice * e.Quantity,
+        mealId: e.mealId,
+        name: e.name,
+        size: e.size,
+        price: e.piecePrice,
+        quantityChange: e.quantity,
+        incomeChange: e.piecePrice * e.quantity,
       })
   );
 
 const updateMealStat = async (mealUpdate: MealUpdate) => {
-  const mealStatRef = db.collection("mealStat").doc(mealUpdate.Id);
+  const mealStatRef = db.collection("mealStat").doc(mealUpdate.mealId);
   try {
     await mealStatRef.update({
       totalOrder: admin.firestore.FieldValue.increment(

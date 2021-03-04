@@ -7,42 +7,46 @@ Hope it's useful for reference.
 ### Order 
 ```typescript
 interface Order {
-  "First Name": string;
-  "Last Name": string;
-  Address: string;
-  Phone: string;
-  Email: string;
-  "Customer Notes": string;
-  "Payment method": string;
-  Items: Item[];
-  Price: number;
-  Discount: number;
-  "Refund Value": number;
-  "Total Order Value": number;
-  "Refund Reason": string;
-  "Date Created": string;
-  "Date Modified": string;
-  Status: string;
-  FromLastWeek: number;
-  FromLastFourWeeks: number;
+  customerId: string;
+  items: Item[];
+  price: number;
+  firstName: string;
+  lastName: string;
+  address: string;
+  phone: string;
+  email: string;
+  customerNotes: string;
+  paymentMethod: string;
+  discount: number;
+  refundValue: number;
+  totalOrderValue: number;
+  refundReason: string;
+  dateCreated: string | any;
+  dateModified: string | any;
+  status: string;
 }
 
 interface Item {
-  Name: string; # id
-  Quantity: number;
-  Size: string;
-  "Piece Price": number;
+  mealId: string;
+  name: string;
+  quantity: number;
+  size: string;
+  piecePrice: number;
 }
 ```
 
 ### Meal
 
 ```typescript
-interface Meal {
-  Name: string; # id
-  Description: string;
-  orderHistory: number;
-  orderWeekly: number;
+interface MealUnit {
+  mealId: string;
+  name: string;
+  price: number;
+  description?: string;
+  size: string;
+  cover?: string[];
+  totalOrders?: number;
+  weeklyOrders?: number;
 }
 ```
 
@@ -50,8 +54,8 @@ interface Meal {
 
 ```typescript
 interface Stat {
-  Income: number;
-  Orders: number;
+  income: number;
+  orders: number;
 }
 ```
 
@@ -59,18 +63,16 @@ interface Stat {
 
 ```typescript
 interface Customer {
-  "First Name": string;
-  "Last Name": string;
-  Phone: string;
-  Email: string;
-  Point: number;
-  "Order History": OrderHistory[];
+  customerId: string;
+  firstName: string;
+  lastName: string;
+  address: string;
+  phone: string;
+  email: string;
+  point?: number;
+  latestOrderDate?: string;
 }
 
-interface OrderHistory {
-  orderId: string;
-  status?: string;
-}
 ```
 
 ## Database talk

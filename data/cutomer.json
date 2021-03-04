@@ -1,8 +1,8 @@
 {
-  "CustomerId": "1111@gmail.com",
-  "FirstName": "Anthony",
-  "LastName": "Costa",
-  "Phone": "905 xxx xxxx",
-  "Email": "1111@gmail.com",
-  "Point?": 100
+  "customerId": "1111@gmail.com",
+  "firstName": "Anthony",
+  "lastName": "Costa",
+  "phone": "905 xxx xxxx",
+  "email": "1111@gmail.com",
+  "point?": 100
 }

@@ -14,11 +14,11 @@ const docsToArr = (
 };
 
 const getOrder = async (req: ViewReq, res: Response) => {
-  const { CustomerId, Number, Status } = req.body;
+  const { customerId, count: Number, status } = req.body;
   try {
-    const order = await getRef(CustomerId)
-      .where("Status", "==", Status ?? "start")
-      .orderBy("DateModified")
+    const order = await getRef(customerId)
+      .where("status", "==", status ?? "start")
+      .orderBy("dateModified")
       .limitToLast(Number ?? 1)
       .get();
     const ret = docsToArr(order);
@@ -29,14 +29,14 @@ const getOrder = async (req: ViewReq, res: Response) => {
 };
 
 const getRef = (customerId: string) =>
-  db.collection("orders").where("CustomerId", "==", customerId);
+  db.collection("orders").where("customerId", "==", customerId);
 
 const addOrder = async (req: OrderReq, res: Response) => {
   const order = req.body;
   try {
-    order.DateModified = admin.firestore.FieldValue.serverTimestamp();
-    order.DateCreated = admin.firestore.Timestamp.fromMillis(
-      Date.parse(order.DateCreated)
+    order.dateModified = admin.firestore.FieldValue.serverTimestamp();
+    order.dateCreated = admin.firestore.Timestamp.fromMillis(
+      Date.parse(order.dateCreated)
     );
     const addRes = await db.collection("orders").add(order);
     res.status(200).send({
@@ -51,7 +51,7 @@ const addOrder = async (req: OrderReq, res: Response) => {
 
 const updateOrder = async (req: DoneReq, res: Response) => {
   const {
-    body: { Status, CustomerId, orderId },
+    body: { status, customerId, orderId },
   } = req;
   try {
     const order = db.collection("orders").doc(orderId);
@@ -62,14 +62,14 @@ const updateOrder = async (req: DoneReq, res: Response) => {
         message: "order doesn't exist",
       });
     }
-    const { Price, Items, DateCreated } = orderData.data() as Order;
-    const date = DateCreated as admin.firestore.Timestamp;
+    const { price, items, dateCreated } = orderData.data() as Order;
+    const date = dateCreated as admin.firestore.Timestamp;
     const monday = getMonday(date.toDate()).getTime();
 
     await order
       .update({
-        Status: Status,
-        DateModified: admin.firestore.FieldValue.serverTimestamp(),
+        status: status,
+        dateModified: admin.firestore.FieldValue.serverTimestamp(),
         weekMark: monday,
       })
       .catch((error) => {
@@ -79,13 +79,13 @@ const updateOrder = async (req: DoneReq, res: Response) => {
         });
       });
 
-    if (Status == "completed") {
+    if (status == "completed") {
       await Promise.all([
         updateStat(
-          { updateIncome: Price, updateOrder: 1, weekMark: monday },
-          Items
+          { updateIncome: price, updateOrder: 1, weekMark: monday },
+          items
         ),
-        updateCustomerHistory(CustomerId, Items),
+        updateCustomerHistory(customerId, items),
       ]);
     }
     return res.status(200).json({
@@ -111,8 +111,8 @@ const cancelOrder = async (req: CancelReq, res: Response) => {
     const order = db.collection("orders").doc(orderId);
     await order
       .update({
-        Status: "cancel",
-        DateModified: admin.firestore.FieldValue.serverTimestamp(),
+        status: "cancel",
+        dateModified: admin.firestore.FieldValue.serverTimestamp(),
       })
       .catch((error) => {
         return res.status(400).json({

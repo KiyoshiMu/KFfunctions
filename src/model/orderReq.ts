@@ -6,23 +6,23 @@ export interface OrderReq {
 
 export interface DoneReq {
   body: {
-    Status: string;
-    CustomerId: string;
+    status: string;
+    customerId: string;
     orderId: string;
   };
 }
 
 export interface CancelReq {
   body: {
-    CustomerId: string;
+    customerId: string;
     orderId: string;
   };
 }
 
 export interface ViewReq {
   body: {
-    CustomerId: string;
-    Number?: number;
-    Status?: string;
+    customerId: string;
+    count?: number;
+    status?: string;
   };
 }
