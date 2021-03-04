@@ -18,44 +18,19 @@ const getStat = async (req: Request, res: Response) => {
   }
 };
 
-const initStat = async (req: Request, res: Response) => {
-  try {
-    await db
-      .collection("saleStat")
-      .doc("realtimeStat")
-      .set({}, { merge: true });
-    res.status(200).send({
-      status: "success",
-      message: "Stat init successfully",
-    });
-  } catch (error) {
-    res.status(500).json(error.message);
-  }
-};
-
 interface statUpdate {
   updateIncome: number;
   updateOrder: number;
-  week: number;
+  weekMark: number;
 }
 
 const updateStat = async (statUpdate: statUpdate, items: Item[]) => {
-  const { week } = statUpdate;
+  const { weekMark } = statUpdate;
   const totalStat = db.collection("saleStat").doc("realtimeStat");
-  const weekStat = totalStat.collection("weekly").doc(week.toString());
+  const weekStat = totalStat.collection("weekly").doc(weekMark.toString());
   await overStatUpdate(totalStat, statUpdate);
   await weekStatUpdate(weekStat, statUpdate);
-  items.forEach(
-    async (e) =>
-      await updateMealStat({
-        Id: e.Id,
-        name: e.Name,
-        size: e.Size,
-        price: e["PiecePrice"],
-        quantityChange: e.Quantity,
-        incomeChange: e["PiecePrice"] * e.Quantity,
-      })
-  );
+  itemStatUpdate(items);
 };
 
 const overStatUpdate = async (
@@ -78,7 +53,7 @@ const overStatUpdate = async (
 
 const weekStatUpdate = async (
   stat: FirebaseFirestore.DocumentReference<FirebaseFirestore.DocumentData>,
-  { updateIncome, updateOrder, week }: statUpdate
+  { updateIncome, updateOrder, weekMark: week }: statUpdate
 ) => {
   try {
     await stat.update({
@@ -96,6 +71,19 @@ const weekStatUpdate = async (
     }
   }
 };
+
+const itemStatUpdate = (items: Item[]) =>
+  items.forEach(
+    async (e) =>
+      await updateMealStat({
+        Id: e.Id,
+        name: e.Name,
+        size: e.Size,
+        price: e.PiecePrice,
+        quantityChange: e.Quantity,
+        incomeChange: e.PiecePrice * e.Quantity,
+      })
+  );
 
 const updateMealStat = async (mealUpdate: MealUpdate) => {
   const mealStatRef = db.collection("mealStat").doc(mealUpdate.Id);
@@ -133,4 +121,4 @@ const updateMealStat = async (mealUpdate: MealUpdate) => {
     }
   }
 };
-export { initStat, updateStat, getStat };
+export { updateStat, getStat };

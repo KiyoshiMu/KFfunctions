@@ -1,9 +1,10 @@
 export interface Customer {
-  "First Name": string;
-  "Last Name": string;
+  Id: string;
+  FirstName: string;
+  LastName: string;
+  Address: string;
   Phone: string;
   Email: string;
-  Point: number;
-  "Latest Order Date"?: string;
-  History?: any;
+  Point?: number;
+  LatestOrderDate?: string;
 }

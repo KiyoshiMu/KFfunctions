@@ -4,6 +4,5 @@
   "LastName": "Costa",
   "Phone": "905 xxx xxxx",
   "Email": "1111@gmail.com",
-  "Point": 100,
-  "OrderHistory": []
+  "Point?": 100
 }

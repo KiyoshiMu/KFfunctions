@@ -7,14 +7,14 @@
         "Name": "Veggie MealSteak",
         "Quantity": 1,
         "Size": "large",
-        "Piece Price": 20
+        "PiecePrice": 20
       },
       {
         "Id": "Sweet_Potatolarge",
         "Name": "Sweet Potato",
         "Quantity": 2,
         "Size": "large",
-        "Piece Price": 10
+        "PiecePrice": 10
       }
     ],
     "Price": 40,
@@ -29,14 +29,14 @@
         "Name": "Veggie MealSteak",
         "Quantity": 1,
         "Size": "large",
-        "Piece Price": 20
+        "PiecePrice": 20
       },
       {
         "Id": "Sweet_Potatolarge",
         "Name": "Sweet Potato",
         "Quantity": 2,
         "Size": "large",
-        "Piece Price": 10
+        "PiecePrice": 10
       }
     ],
     "Price": 40,

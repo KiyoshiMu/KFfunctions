@@ -19,7 +19,7 @@ export interface CancelReq {
   };
 }
 
-export interface QueryReq {
+export interface ViewReq {
   body: {
     CustomerId: string;
     Number?: number;
