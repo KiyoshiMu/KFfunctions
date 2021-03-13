@@ -1,3 +1,9 @@
+export enum Status {
+  start = "start",
+  done = "done",
+  cancel = "cancel",
+}
+
 export interface Order {
   customerId: string;
   items: Item[];
@@ -15,7 +21,7 @@ export interface Order {
   refundReason?: string;
   dateCreated: string | any;
   dateModified?: string | any;
-  status: string;
+  status: Status;
 }
 
 export interface Item {

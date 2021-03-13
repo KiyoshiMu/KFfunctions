@@ -27,7 +27,9 @@ interface statUpdate {
 const updateStat = async (statUpdate: statUpdate, items: Item[]) => {
   const { weekMark } = statUpdate;
   const totalStat = db.collection("saleStat").doc("realtimeStat");
-  const weekStat = totalStat.collection("weekly").doc(weekMark.toString());
+  const weekStat = totalStat
+    .collection("weekly")
+    .doc(new Date(weekMark).toUTCString());
   await overStatUpdate(totalStat, statUpdate);
   await weekStatUpdate(weekStat, statUpdate);
   itemStatUpdate(items);
