@@ -1,57 +1,23 @@
-[
-  {
-    "customerId": "1111@gmail.com",
-    "items": [
-      {
-        "mealId": "Veggie_MealSteaklarge",
-        "name": "Veggie MealSteak",
-        "quantity": 1,
-        "size": "large",
-        "piecePrice": 20
-      },
-      {
-        "mealId": "Sweet_Potatolarge",
-        "name": "Sweet Potato",
-        "quantity": 2,
-        "size": "large",
-        "piecePrice": 10
-      }
-    ],
-    "price": 40,
-    "status": "start",
-    "dateCreated": "2019-08-19T18:04:05"
-  },
-  {
-    "customerId": "1111@gmail.com",
-    "items": [
-      {
-        "Id": "Veggie_MealSteaklarge",
-        "Name": "Veggie MealSteak",
-        "Quantity": 1,
-        "Size": "large",
-        "PiecePrice": 20
-      },
-      {
-        "Id": "Sweet_Potatolarge",
-        "Name": "Sweet Potato",
-        "Quantity": 2,
-        "Size": "large",
-        "PiecePrice": 10
-      }
-    ],
-    "price": 40,
-    "paymentMethod": "Cash on delivery",
-    "firstName": "Anthony",
-    "lastName": "Costa",
-    "address": "1280 Main XXXXX Hamilton CA",
-    "phone": "905 xxx xxxx",
-    "email": "1111@gmail.com",
-    "Customer Notes": "",
-    "discount": 0,
-    "refundValue": 0,
-    "totalOrderValue": 0,
-    "refundReason": "",
-    "dateModified": "2019-09-02T18:07:51",
-    "dateCreated": "2019-08-19T18:04:05"
-  }
-]
+{
+  "customerId": "1111@gmail.com",
+  "items": [
+    {
+      "mealId": "Veggie_MealSteaklarge",
+      "name": "Veggie MealSteak",
+      "quantity": 1,
+      "size": "large",
+      "piecePrice": 20
+    },
+    {
+      "mealId": "Sweet_Potatolarge",
+      "name": "Sweet Potato",
+      "quantity": 2,
+      "size": "large",
+      "piecePrice": 10
+    }
+  ],
+  "price": 40,
+  "status": "start",
+  "dateCreated": "2019-08-19T18:04:05"
+}
+
