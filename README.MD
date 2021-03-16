@@ -8,7 +8,7 @@ Hope it's useful for reference.
 
     curl -H "Content-Type: application/json" --data @reqOrder.json https://us-central1-kitchenfuel-data.cloudfunctions.net/app/addOrder
 
-reqOrder.json should be like /functions/data/reqOrder.json:
+reqOrder.json should be like data/reqOrder.json:
 
 ```json
 {
@@ -49,7 +49,7 @@ orderId, customerId are used to identify an order.
 
     curl -H "Content-Type: application/json" --data @reqView.json https://us-central1-kitchenfuel-data.cloudfunctions.net/app/getOrder
 
-reqView.json should be like /functions/data/reqView.json:
+reqView.json should be like data/reqView.json:
 
 ```json
 {
@@ -93,7 +93,7 @@ Happy Respond:
 
     curl -H "Content-Type: application/json" --data @reqUpdate.json https://us-central1-kitchenfuel-data.cloudfunctions.net/app/updateOrder
 
-reqUpdate.json should be like /functions/data/reqUpdate.json:
+reqUpdate.json should be like data/reqUpdate.json:
 
 **Change the orderId to the orderId returned before**
 
